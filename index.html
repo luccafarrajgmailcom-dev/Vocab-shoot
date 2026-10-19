@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>Vocab Quest: Target Run</title>
+<style>
+:root{--cyan:#38d9ff;--lime:#7cff6b;--red:#ff4d63;--ink:#07111f;--panel:#0a1830}
+*{box-sizing:border-box}body{margin:0;background:#07111f;color:#f4f8ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button{font:inherit;cursor:pointer;color:inherit}.app{max-width:1100px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #23415c;padding:8px 0 14px}
+.brand{font-weight:1000;letter-spacing:1px;font-size:clamp(22px,4vw,34px);line-height:1}.brand span{color:var(--cyan)}.sub{font-size:12px;color:#9fb8ce;letter-spacing:2px;margin-top:7px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}.stat{background:#10223a;border:1px solid #244765;border-radius:10px;padding:8px 12px;min-width:78px;text-align:center}.stat small{display:block;color:#9fb8ce;font-size:10px;letter-spacing:1px}.stat b{font-size:20px}
+main{display:grid;grid-template-columns:1fr 260px;gap:14px;margin-top:14px}.arena{min-height:460px;position:relative;overflow:hidden;border:1px solid #24516c;border-radius:18px;background:linear-gradient(180deg,#163d60 0%,#356078 36%,#202e3b 37%,#111c27 100%);padding:18px;display:flex;flex-direction:column}
+.arena:before{content:"";position:absolute;inset:35% 0 0;background:repeating-linear-gradient(90deg,transparent 0 70px,#ffffff07 71px 73px),linear-gradient(0deg,#070e18,#243746);clip-path:polygon(0 20%,100% 0,100% 100%,0 100%);pointer-events:none}
+.sun{position:absolute;width:100px;height:100px;border-radius:50%;background:#ffc76d;right:15%;top:11%;box-shadow:0 0 70px #ff9d4770}
+.mission{position:relative;z-index:1;background:#061323dd;border:1px solid #2c627f;border-radius:12px;padding:13px 15px;max-width:600px}.mission small{color:var(--cyan);font-weight:800;letter-spacing:1.5px}.mission h2{margin:5px 0 0;font-size:clamp(18px,3vw,25px)}
+.targets{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:auto 0;padding:25px 0 8px}
+.target{min-height:90px;border:2px solid #4c6b82;background:linear-gradient(145deg,#152a40,#07111f);border-radius:14px;padding:14px 8px;box-shadow:0 8px 0 #040a11;transition:transform .12s,border-color .12s,background .12s;text-align:center;font-weight:900;font-size:clamp(15px,2.3vw,21px)}
+.target:hover{transform:translateY(-3px);border-color:var(--cyan)}.target:active{transform:scale(.97)}.target.hit{border-color:var(--lime);background:#153a2a}.target.wrong{border-color:var(--red);background:#401b2a}.target .key{display:block;color:var(--cyan);font-size:10px;letter-spacing:2px;margin-bottom:6px}
+.crosshair{position:absolute;z-index:2;left:50%;top:57%;width:36px;height:36px;transform:translate(-50%,-50%);border:2px solid #b8f5ff;border-radius:50%;opacity:.65;pointer-events:none}.crosshair:before,.crosshair:after{content:"";position:absolute;background:#b8f5ff}.crosshair:before{width:52px;height:2px;left:-10px;top:15px}.crosshair:after{height:52px;width:2px;top:-10px;left:15px}
+.feedback{position:relative;z-index:3;text-align:center;font-weight:900;min-height:30px;color:var(--lime);text-shadow:0 2px 4px #000}
+.side{display:flex;flex-direction:column;gap:12px}.card{background:#0b1a2d;border:1px solid #234765;border-radius:15px;padding:15px}.card h3{margin:0 0 12px;font-size:13px;color:var(--cyan);letter-spacing:1.5px}.healthbar{height:10px;background:#23364b;border-radius:99px;overflow:hidden;margin:8px 0}.healthbar div{height:100%;width:100%;background:linear-gradient(90deg,#54e6b0,#8aff73);transition:width .2s}.wordlist{display:flex;flex-wrap:wrap;gap:6px}.chip{font-size:12px;border:1px solid #314b64;border-radius:8px;padding:5px 7px;color:#a9c0d4}.chip.done{color:var(--lime);border-color:#398c59;text-decoration:line-through}.action{width:100%;border:0;border-radius:10px;padding:12px;background:var(--cyan);color:#06111e;font-weight:1000;margin-top:8px}.action.secondary{background:#20364c;color:#fff;border:1px solid #38546c}.hint{color:#9fb8ce;font-size:12px;line-height:1.5}.overlay{position:fixed;inset:0;background:#020812df;display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modal{max-width:520px;width:100%;padding:26px;border-radius:20px;background:#0b1b30;border:1px solid #32718c;text-align:center;box-shadow:0 0 60px #00b8ff20}.modal h1{font-size:clamp(28px,7vw,42px);margin:0 0 10px}.modal p{color:#bdd0df;line-height:1.6}.modal .action{font-size:17px;padding:14px}.hidden{display:none!important}
+@media(max-width:760px){main{grid-template-columns:1fr}.arena{min-height:480px;padding:12px}.side{display:grid;grid-template-columns:1fr 1fr}.side .card:first-child{grid-column:1/-1}.targets{gap:9px}.target{min-height:80px}.app{padding:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="brand">VOCAB <span>QUEST</span></div><div class="sub">TARGET RUN • WEEKS 9 & 10 • GRADE 7</div></div>
+<div class="stats"><div class="stat"><small>SCORE</small><b id="score">0</b></div><div class="stat"><small>STREAK</small><b id="streak">0</b></div><div class="stat"><small>WORDS HIT</small><b id="progress">0/10</b></div></div></header>
+<main><section class="arena"><div class="sun"></div><div class="mission"><small>MISSION OBJECTIVE</small><h2 id="prompt">Loading mission…</h2></div><div class="targets" id="targets"></div><div class="crosshair"></div><div class="feedback" id="feedback" aria-live="polite">Pick the target that matches the definition!</div></section>
+<aside class="side"><div class="card"><h3>PLAYER STATUS</h3><div style="display:flex;justify-content:space-between"><b>Health</b><b id="healthText">100 / 100</b></div><div class="healthbar"><div id="health"></div></div><p class="hint" id="status">Training simulation active. Wrong shots cost 10 health.</p><button class="action secondary" id="hintBtn">SCAN FOR HINT</button></div>
+<div class="card"><h3>WORD INTEL</h3><div class="wordlist" id="wordlist"></div><p class="hint" style="margin-bottom:0">Every word appears once in a randomized mission order. Answer choices are shuffled, too.</p></div>
+<div class="card"><h3>CONTROLS</h3><p class="hint">Tap/click a target to fire. Choose carefully: correct hits earn 100 XP. Wrong targets cost health.</p><button class="action secondary" id="restart">RESTART RUN</button></div></aside></main></div>
+<div class="overlay" id="startScreen"><div class="modal"><h1>VOCAB <span style="color:var(--cyan)">QUEST</span></h1><p>Enter the training arena. Targets show possible vocabulary words—shoot the correct answer to each mission prompt. The questions and choices are randomized every run, so they are <b>not in the same order</b>.</p><p>10 missions • 100 XP per correct hit • Wrong shot costs 10 health</p><button class="action" id="start">DEPLOY TO ARENA ▶</button></div></div>
+<div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">RUN COMPLETE</h1><p id="endText"></p><p id="rank"></p><button class="action" id="playAgain">RUN IT BACK ↻</button></div></div>
+<script>
+const bank=[
+ {word:"Ephemeral",def:"Lasting a very short time",pos:"Adjective"},
+ {word:"Cordial",def:"Courteous; polite",pos:"Adjective"},
+ {word:"Indispensable",def:"Absolutely necessary; essential",pos:"Adjective"},
+ {word:"Vilify",def:"Speak or write about someone harshly or unfairly",pos:"Verb"},
+ {word:"Ascend",def:"Move or climb upward",pos:"Verb"},
+ {word:"Unanimous",def:"A situation in which everyone is in agreement",pos:"Adjective"},
+ {word:"Conspicuous",def:"Standing out; easily noticeable",pos:"Adjective"},
+ {word:"Elation",def:"A feeling of great happiness",pos:"Noun"},
+ {word:"Juvenile",def:"Young or related to youth",pos:"Adjective"},
+ {word:"Cynic",def:"Someone who doubts others' sincerity or believes others act for selfish purposes",pos:"Noun"}
+];
+const $=id=>document.getElementById(id);
+let missions=[],idx=0,score=0,streak=0,health=100,done=new Set(),locked=false,hintUsed=false;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startGame(){missions=shuffle(bank);idx=0;score=0;streak=0;health=100;done=new Set();locked=false;hintUsed=false;$("score").textContent=0;$("streak").textContent=0;$("healthText").textContent="100 / 100";$("health").style.width="100%";$("status").textContent="Training simulation active. Wrong shots cost 10 health.";$("feedback").textContent="Pick the target that matches the definition!";$("startScreen").classList.add("hidden");$("endScreen").classList.add("hidden");renderWords();renderMission()}
+function renderWords(){$("wordlist").innerHTML=bank.map(x=>`<span class="chip ${done.has(x.word)?"done":""}">${done.has(x.word)?"✓ ":""}${x.word}</span>`).join("");$("progress").textContent=`${done.size}/10`}
+function renderMission(){if(idx>=missions.length||health<=0){finish();return}locked=false;hintUsed=false;let m=missions[idx];$("prompt").textContent=m.def;$("targets").innerHTML="";let choices=shuffle([m,...shuffle(bank.filter(x=>!done.has(x.word)&&x.word!==m.word)).slice(0,3)]);choices=shuffle(choices);choices.forEach((x,i)=>{let b=document.createElement("button");b.className="target";b.innerHTML=`<span class="key">TARGET ${String.fromCharCode(65+i)}</span>${x.word}`;b.addEventListener("click",()=>shoot(x.word,b));$("targets").appendChild(b)});$("feedback").textContent=`MISSION ${idx+1}/10 — acquire the correct target`; }
+function shoot(word,button){if(locked)return;locked=true;let m=missions[idx];if(word===m.word){button.classList.add("hit");score+=100;streak++;done.add(word);$("feedback").textContent="✓ TARGET CONFIRMED  +100 XP";$("feedback").style.color="var(--lime)";$("status").textContent="Direct hit! Mission cleared."; }else{button.classList.add("wrong");health=Math.max(0,health-10);streak=0;$("feedback").textContent="✕ WRONG TARGET  −10 HEALTH";$("feedback").style.color="var(--red)";$("status").textContent=`Incorrect target. Correct word: ${m.word}.`;[...$("targets").children].forEach(el=>{if(el.textContent.includes(m.word))el.classList.add("hit")})}
+$("score").textContent=score;$("streak").textContent=streak;$("healthText").textContent=`${health} / 100`;$("health").style.width=health+"%";renderWords();setTimeout(()=>{idx++;renderMission()},900)}
+$("hintBtn").addEventListener("click",()=>{if(locked)return;let m=missions[idx];if(!m)return;let first=m.word[0];$("feedback").style.color="var(--cyan)";$("feedback").textContent=`SCAN: The answer starts with “${first}” (${m.pos.toLowerCase()}).`;hintUsed=true});
+function finish(){locked=true;$("endScreen").classList.remove("hidden");let title=health<=0?"SIMULATION OVER":score===1000?"VOCAB LEGEND!":score>=700?"WORD WARRIOR!":"RUN COMPLETE";$("endTitle").textContent=title;$("endText").textContent=`Final score: ${score} XP • Correct words: ${done.size}/10 • Health remaining: ${health}/100 • Best streak: ${streak}`;$("rank").textContent=score>=900?"Rank: Vocabulary Legend":score>=700?"Rank: Word Warrior":score>=400?"Rank: Rookie Ranger":"Rank: Training Recruit"}
+$("start").addEventListener("click",startGame);$("restart").addEventListener("click",()=>{$("startScreen").classList.remove("hidden");$("endScreen").classList.add("hidden")});$("playAgain").addEventListener("click",startGame);
+</script></body></html>
